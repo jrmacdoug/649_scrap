@@ -1,0 +1,10 @@
+# Ignore Mac system files
+.DS_store
+
+# Ignore notes
+*.docx
+
+# Ignore data folder
+data
+venv
+
