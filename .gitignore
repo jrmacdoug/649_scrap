@@ -3,8 +3,12 @@
 
 # Ignore notes
 *.docx
+*.xlsx
+*.db
+
 
 # Ignore data folder
 data
 venv
+
 
