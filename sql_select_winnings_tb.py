@@ -10,11 +10,20 @@ cur = con.cursor()
 
 
 res = cur.execute("""
-SELECT * FROM winnings     
-    WHERE year = 1990
+SELECT count(*)
+FROM winnings     
+WHERE num1 is null
+ORDER BY year,month,day
 """)
 [print(row) for row in res]
 
+res = cur.execute("""
+SELECT count(*)
+FROM winnings     
+WHERE num1 is not null
+ORDER BY year,month,day
+""")
+[print(row) for row in res]
 
 con.commit()
 con.close()

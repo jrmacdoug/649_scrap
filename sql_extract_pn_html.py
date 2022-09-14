@@ -7,42 +7,48 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import sqlite3
 
-data_path = Path('data')
 
-sql_insert_date="""
-    INSERT INTO winnings(year,month,day)
-    VALUES (?,?,?)
-    """
-
-sql_update_nums="""
-    UPDATE winnings
-    SET num1 = ?,
-        num2 = ?,
-        num3 = ?,
-        num4 = ?,
-        num5 = ?,
-        num6 = ?,
-        bonus = ?
-    WHERE year = ?
-    AND month = ?
-    AND day = ?
-    """
-
-def sql_match_insert(payout_t,a,b,p=False):
+def sql_match_insert(payout_t,a,p=False):
     if p:
-        sql = """UPDATE winnings SET prize_{}_{}p = \"{}\", winners_{}_{}p = \"{}\" WHERE year = ? AND month = ? AND day = ?"""
-        match = "{}/{}+".format(a,b)
+        sql = """UPDATE winnings SET prize_{}_6p = \"{}\", winners_{}_6p = \"{}\" WHERE year = ? AND month = ? AND day = ?"""
+        match = "{}/6+".format(a)
     else:
-        sql = """UPDATE winnings SET prize_{}_{} = \"{}\", winners_{}_{} = \"{}\" WHERE year = ? AND month = ? AND day = ?"""
-        match = "{}/{}".format(a,b)    
+        sql = """UPDATE winnings SET prize_{}_6 = \"{}\", winners_{}_6 = \"{}\" WHERE year = ? AND month = ? AND day = ?"""
+        match = "{}/6".format(a)    
     prize = payout_t.loc[payout_t['Match'] == match]['Prize'].values[0]
     winner = payout_t.loc[payout_t['Match'] == match]['Winners'].values[0]
-    return sql.format(a,b,prize,a,b,winner)
+    if a == 3:
+        prize = "$10.00"
+    if a == 2:
+        prize = "$0.00"
+    return sql.format(a,prize,a,winner)
 
 def main():   
+    
+    data_path = Path('data')
+
+    sql_insert_date="""
+        INSERT INTO winnings(year,month,day)
+        VALUES (?,?,?)
+        """
+
+    sql_update_nums="""
+        UPDATE winnings
+        SET num1 = ?,
+            num2 = ?,
+            num3 = ?,
+            num4 = ?,
+            num5 = ?,
+            num6 = ?,
+            bonus = ?
+        WHERE year = ?
+        AND month = ?
+        AND day = ?
+        """
+    
     con = sqlite3.connect("649_lottery.db")
     cur = con.cursor()
-    
+
     for f in data_path.iterdir():
         yy = f.name[-15:-11]
         mm = f.name[-10:-8]
@@ -73,16 +79,16 @@ def main():
             try:
                 table = pn_soup.find('table',{"class":"product-prize-breakdown__table product-prize-breakdown__table_game-breakdown"})
                 payout_table = pd.read_html(str(table))[0]
-                cur.execute(sql_match_insert(payout_table,6,6),(yy,mm,dd))
-                cur.execute(sql_match_insert(payout_table,5,6,True),(yy,mm,dd))
-                cur.execute(sql_match_insert(payout_table,5,6),(yy,mm,dd))
-                cur.execute(sql_match_insert(payout_table,4,6),(yy,mm,dd))
+                cur.execute(sql_match_insert(payout_table,6),(yy,mm,dd))
+                cur.execute(sql_match_insert(payout_table,5,True),(yy,mm,dd))
+                cur.execute(sql_match_insert(payout_table,5),(yy,mm,dd))
+                cur.execute(sql_match_insert(payout_table,4),(yy,mm,dd))
                 try:
-                    cur.execute(sql_match_insert(payout_table,3,6),(yy,mm,dd))
+                    cur.execute(sql_match_insert(payout_table,3),(yy,mm,dd))
                 except IndexError:
                     pass  
                 try:
-                    cur.execute(sql_match_insert(payout_table,2,6,True),(yy,mm,dd))
+                    cur.execute(sql_match_insert(payout_table,2,True),(yy,mm,dd))
                 except IndexError:
                     pass
             except ValueError:
