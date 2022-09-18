@@ -4,11 +4,15 @@
 # Ignore notes
 *.docx
 *.xlsx
-*.db
 
+# Ignore data
+*.db
+*.csv
+*.ipynb
 
 # Ignore data folder
 data
 venv
+
 
 
