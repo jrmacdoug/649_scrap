@@ -4,10 +4,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 from pathlib import Path
 
-"""
-https://www.cbc.ca/news/canada/nova-scotia/atlantic-lottery-is-retiring-the-balls-1.51075980
-"""
-
 def main():   
 
     base_649_site = 'https://www.playnow.com/lottery/lotto-649-winning-numbers/?date='
